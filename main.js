@@ -12,21 +12,7 @@ const pino = require("pino");
 
 const fs = require("fs");
 const path = require("path");
-const logger = pino(
-	pino.destination(
-		path.join(
-			require("os").homedir(),
-			"elymus-fastify-log-" + Date.now() + ".txt"
-		)
-	)
-);
 
-const serve = require("electron-serve");
-
-const loadURL = serve({
-	isCorsEnabled: false,
-	directory: path.join(__dirname, "ui-static", "public"),
-});
 protocol.registerSchemesAsPrivileged([
 	{
 		scheme: "repens",
@@ -40,9 +26,18 @@ protocol.registerSchemesAsPrivileged([
 		},
 	},
 ]);
+
 const unhandled = require("electron-unhandled");
 
 unhandled();
+const logger = pino(
+	pino.destination(
+		path.join(
+			require("os").homedir(),
+			"elymus-fastify-log-" + Date.now() + ".txt"
+		)
+	)
+);
 async function startup() {
 	let IPFS = await import("ipfs");
 
@@ -107,8 +102,7 @@ async function startup() {
 		win.on("close", () => {
 			win = null;
 		});
-
-		loadURL(win);
+		win.loadURL("http://localhost:11984/");
 	};
 
 	app.on("window-all-closed", () => {
@@ -117,7 +111,7 @@ async function startup() {
 	const fastify = require("fastify")({ logger });
 
 	// Declare a route
-	fastify.get("/show", async (request, reply) => {
+	fastify.get("/api/show", async (request, reply) => {
 		if (!win) {
 			createWindow();
 		} else {
@@ -128,11 +122,14 @@ async function startup() {
 		}
 		return { okay: true };
 	});
-
+	fastify.register(require("@fastify/static"), {
+		root: path.join(__dirname, "ui-static/public"),
+		prefix: "/", // optional: default '/'
+	});
 	// Run the server!
 	const start = async (app) => {
 		try {
-			let { body } = await request("http://localhost:11984/show");
+			let { body } = await request("http://localhost:11984/api/show");
 			if ((await body.json()).okay) {
 				return app.exit();
 			}
@@ -155,7 +152,7 @@ async function startup() {
 
 				createWindow();
 
-				tray = new Tray(path.join(__dirname, "src", "assets", "logo-01.png"));
+				tray = new Tray(path.join(__dirname, "icon.png"));
 				const contextMenu = Menu.buildFromTemplate([
 					{
 						label: "Stop and close Elymus",

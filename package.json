@@ -1,6 +1,6 @@
 {
   "name": "elymus",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Censorship resistance at highest level",
   "main": "main.js",
   "repository": "https://github.com/angrymouse/elymus",
@@ -25,16 +25,13 @@
     "app:dist": "electron-builder"
   },
   "dependencies": {
-    "@electron-forge/maker-wix": "^6.0.0-beta.65",
+    "@fastify/static": "^6.5.0",
     "@reforged/maker-appimage": "^1.2.1",
     "bns": "^0.15.0",
     "bs58": "^5.0.0",
     "cids": "^1.1.9",
     "daisyui": "^2.24.0",
-    "electron-builder-squirrel-windows": "^23.4.0",
     "electron-forge-maker-nsis": "^23.4.0",
-    "electron-serve": "^1.1.0",
-    "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "electron-unhandled": "^4.0.1",
     "fastify": "^4.5.2",
