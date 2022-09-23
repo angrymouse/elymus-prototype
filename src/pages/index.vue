@@ -1,5 +1,5 @@
 <template>
-	<div class="hero min-h-screen bg-base-200">
+	<div class="hero min-h-screen bg-base-200" v-if="synced">
 		<div class="hero-content text-center">
 			<div
 				class="
@@ -30,10 +30,22 @@
 		</div>
 		<ConnectWallet />
 	</div>
+	<div v-else>{{ height }}</div>
 </template>
 <script setup>
 const router = useRouter();
-if (await elApi.kvGet("setuped")) {
+
+let height = ref(0);
+let synced = ref(false);
+
+setInterval(async () => {
+	let hnsdStats = await $fetch("http://localhost:1111/api/hnsd-status");
+	console.log(hnsdStats);
+	height.value = hnsdStats.height;
+	synced.value = hnsdStats.synced;
+}, 1000);
+
+if ((await elApi.kvGet("setuped")) && synced.value) {
 	router.push({ path: "/home" });
 }
 </script>

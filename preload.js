@@ -13,4 +13,7 @@ contextBridge.exposeInMainWorld("elApi", {
 	async stopApp() {
 		return await ipcRenderer.invoke("stop-app");
 	},
+	async HNSDStatus() {
+		return await ipcRenderer.invoke("hnsd-status");
+	},
 });
